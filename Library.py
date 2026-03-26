@@ -87,3 +87,27 @@ class Library:
             print(" ", book.display_info())
         print(f"\n{'-'*60}")
         
+## Member Management System
+
+    def add_member(self, member: Member) -> None:
+        if member.member_id in self.members:
+            raise ValueError("Member with this ID already exists.")
+        self.members[member.member_id] = member
+        print(f"Member added: {member.display_info()}")
+
+    def remove_member(self, member_id: str) -> None:
+        if member_id not in self.members:
+            raise ValueError("Member not found.")
+        del self.members[member_id]
+        print(f"Member removed: {member_id}")
+
+    def display_members(self) -> None:
+        if not self.members:
+            print("No members registered.")
+            return
+        print(f"\n{'-'*60}")
+        print(f" {self.name} - Member Directory ({len(self.members)} members)")
+        print(f"\n{'-'*60}")
+        for member in self.members.values():
+            print(" ", member.display_info())
+        print(f"\n{'-'*60}")
