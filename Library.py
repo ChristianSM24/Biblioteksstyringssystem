@@ -19,12 +19,13 @@ class Book(LibraryItem):
     def __init__(self, title: str, author: str, copies: int, isbn: str):
         super().__init__(title, author, copies)
         self.isbn = isbn
+        self.available = copies
 
     def display_info(self) -> str:
-        return f"Book Title: {self.title}, Author: {self.author}, Copies Available: {self.copies}, ISBN: {self.isbn}"
-    
+        return f"Book Title: {self.title}, Author: {self.author}, Copies Available: {self.available}, ISBN: {self.isbn}"
+
     def __repr__(self):
-        status = f"{self.copies} available "
+        status = f"{self.available} available "
         return f"<Book: {self.title}, {status}>"
 
 
@@ -45,7 +46,7 @@ class Member(LibraryItem):
 class Library:
     def __init__(self, name: str = "Library"):
         self.name = name
-        self.items: list[dict] = []
+        self.items: dict[str, Book] = {}
         self.members: dict[str, Member] = {}
 
 ## Book Management System
@@ -70,10 +71,9 @@ class Library:
         if copies is not None: 
             if copies < (book.copies - book.available):
                 raise ValueError("Cannot reduce copies below borrowed amount.")
+            delta = copies - book.copies
+            book.available = max(0, book.available + delta)
             book.copies = copies
-        delta = copies - book.copies
-        book.copies = copies
-        book.available = max(0, book.available + delta)
         print(f"Book updated: {book.display_info()}")
 
     def display_books(self) -> None:
