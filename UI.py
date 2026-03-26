@@ -1,4 +1,4 @@
-from library import Library, Book, Member
+from Library import Library, Book, Member
 
 def print_header(title: str) -> None:
     print(f"\n{'-'*60}")
@@ -67,7 +67,7 @@ def book_management_menu(lib: Library) -> None:
             "1": "Add Member",
             "2": "Remove Member",
             "3": "Update Member",
-            "4": "Search Member",
+            "4": "Show Membber History",
             "0": "Back to Main Menu"
         }
         while True:
@@ -101,7 +101,12 @@ def book_management_menu(lib: Library) -> None:
                     print(f"Error updating member: {e}")
             elif choice == "4":
                 # Search member logic
-                lib.display_members()
+                mid = input("Member ID: ").strip()
+                try:
+                    m = lib.members(mid)
+                    print(m.display_history())
+                except KeyError:
+                    print(f"Member with ID {mid} not found.")
                 
             elif choice == "0":
                 break
