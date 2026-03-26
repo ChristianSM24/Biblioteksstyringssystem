@@ -25,21 +25,88 @@ def book_management_menu(lib: Library) -> None:
         choice = input("Enter your choice: ")
         if choice == "1":
             # Add book logic
-            pass
+            bid = input("Enter book ID: ").strip()
+            title = input("Enter book title: ").strip()
+            author = input("Enter book author: ").strip()
+            copies = int(input("Enter number of copies: ").strip())
+            try:
+                lib.add_book(Book(title, author, copies, bid))
+            except ValueError as e:
+                print(f"Error adding book: {e}")
         elif choice == "2":
             # Remove book logic
-            pass
+            bid = input("Enter book ID to remove: ").strip()
+            try:
+                lib.remove_book(bid)
+            except ValueError as e:
+                print(f"Error removing book: {e}")
         elif choice == "3":
             # Update book logic
-            pass
+            bid = input("Enter book ID to update: ").strip()
+            title = input("Enter new book title (Enter to Skip): ").strip() or None
+            author = input("Enter new book author (Enter to Skip): ").strip() or None
+            c_str = input("New copies (Enter to Skip): ").strip()
+            copies = int(c_str) if c_str else None
+            try:
+                lib.update_book(bid, title, author, copies)
+            except ValueError as e:
+                print(f"Error updating book: {e}")
         elif choice == "4":
             # Search book logic
-            pass
+            q = input("Enter search query (title/author): ").strip()
+            results = lib.search_books(q)
+            
         elif choice == "0":
             break
         else:
             print("Invalid choice.")
         pause()
+
+    def member_management_menu(lib: Library) -> None:
+        options = {
+            "1": "Add Member",
+            "2": "Remove Member",
+            "3": "Update Member",
+            "4": "Search Member",
+            "0": "Back to Main Menu"
+        }
+        while True:
+            print_header("Member Management Menu")
+            for key, value in options.items():
+                print(f"{key}. {value}")
+            choice = input("Enter your choice: ")
+            if choice == "1":
+                # Add member logic
+                mid = input("Enter member ID: ").strip()
+                name = input("Enter member name: ").strip()
+                try:
+                    lib.add_member(Member(name, mid))
+                except ValueError as e:
+                    print(f"Error adding member: {e}")
+                    
+            elif choice == "2":
+                # Remove member logic
+                mid = input("Enter member ID to remove: ").strip()
+                try:
+                    lib.remove_member(mid)
+                except ValueError as e:
+                    print(f"Error removing member: {e}")
+            elif choice == "3":
+                # Update member logic
+                mid = input("Enter member ID to update: ").strip()
+                name = input("Enter new member name: ").strip()
+                try:
+                    lib.update_member(mid, name)
+                except ValueError as e:
+                    print(f"Error updating member: {e}")
+            elif choice == "4":
+                # Search member logic
+                lib.display_members()
+                
+            elif choice == "0":
+                break
+            else:
+                print("Invalid choice.")
 
 # Main Menu
 def main() -> None:
