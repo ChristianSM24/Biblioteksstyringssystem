@@ -48,8 +48,20 @@ class Library:
         self.items: list[dict] = []
         self.members: dict[str, Member] = {}
 
+## Book Management System
     def add_book(self, book: Book) -> None:
         if book.isbn in self.items:
             raise ValueError("Book with this ISBN already exists.")
         self.items[book.isbn] = book
         print(f"Book added: {book.display_info()}")
+
+    def remove_book(self, isbn: str) -> None:
+        book = self._get_book(isbn)
+        if book.available < book.copies:
+            raise RuntimeError("Book is currently borrowed and cannot be removed.")
+
+        del self.items[isbn]
+        print(f"Book removed: {book.display_info()}")
+
+    def update_book(self, isbn: str, title: str = None, author: str = None, copies: int = None) -> None:
+  
