@@ -111,3 +111,17 @@ class Library:
         for member in self.members.values():
             print(" ", member.display_info())
         print(f"\n{'-'*60}")
+
+## Search Function 
+
+    def search_books(self, query: str) -> list[Book]:
+
+        q = query.lower()
+        results = [b for b in self.books.values() if q in b.title.lower() or q in b.author.lower()]
+        if results:
+            print(f"\nSearch Results for '{query}':")
+            for book in results:
+                print(" ", book.display_info())
+            else:
+                print("No books found.")
+        return results
