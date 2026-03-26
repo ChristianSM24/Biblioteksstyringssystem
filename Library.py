@@ -64,4 +64,16 @@ class Library:
         print(f"Book removed: {book.display_info()}")
 
     def update_book(self, isbn: str, title: str = None, author: str = None, copies: int = None) -> None:
-  
+        book = self._get_book(isbn)
+        if title is not None: book.title = title
+        if author is not None: book.author = author
+        if copies is not None: 
+            if copies < (book.copies - book.available):
+                raise ValueError("Cannot reduce copies below borrowed amount.")
+            book.copies = copies
+        delta = copies - book.copies
+        book.copies = copies
+        book.available = max(0, book.available + delta)
+        print(f"Book updated: {book.display_info()}")
+        
+    
