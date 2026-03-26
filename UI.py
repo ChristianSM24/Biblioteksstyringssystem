@@ -150,7 +150,7 @@ def main() -> None:
     lib = Library("Py-Library")
 
     lib.add_book(Book("1984", "George Orwell", 5, "1234567890"))
-    lib.add_book(Book("To Kill a Mockingbird", "Harper Lee", 3, "0987654321"))
+    lib.add_book(Book("To Kill a Mockingbird", "Harper Lee", 1, "0987654321"))
     lib.add_member(Member("Alice", "M001", "alice@example.com"))
     lib.add_member(Member("Bob", "M002", "bob@example.com"))
 
