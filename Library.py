@@ -75,5 +75,15 @@ class Library:
         book.copies = copies
         book.available = max(0, book.available + delta)
         print(f"Book updated: {book.display_info()}")
+
+    def display_books(self) -> None:
+        if not self.books:
+            print("No books available.")
+            return
+        print(f"\n{'-'*60}")
+        print(f" {self.name} - Book Catalog ({len(self.books)} titles)")
+        print(f"\n{'-'*60}")
+        for book in self.books.values():
+            print(" ", book.display_info())
+        print(f"\n{'-'*60}")
         
-    
