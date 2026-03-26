@@ -125,3 +125,37 @@ class Library:
             else:
                 print("No books found.")
         return results
+
+## Circulation system
+
+    def issue_book(self, member_id: str, book_isbn: str) -> None:
+        member = self.members.get(member_id)
+        book = self.books.get(book_isbn)
+        if not member:
+            raise ValueError("Member not found.")
+        if not book:
+            raise ValueError("Book not found.")
+        if book.available < 1:
+            raise RuntimeError("Book is not available for borrowing.")
+
+        book.available -= 1
+        member.borrowed_items[book_isbn] = book.title
+        member.history.append({"action": "borrow", "book": book.title})
+        print(f"Book issued: {book.display_info()} to {member.display_info()}")
+
+    def return_book(self, member_id: str, book_isbn: str) -> None:
+        member = self.members.get(member_id)
+        book = self.books.get(book_isbn)
+        if not member:
+            raise ValueError("Member not found.")
+        if not book:
+            raise ValueError("Book not found.")
+        if book.isbn not in member.borrowed_items:
+            raise RuntimeError("Book was not borrowed by this member.")
+
+        book.available += 1
+        del member.borrowed_items[book.isbn]
+        member.history.append({"action": "return", "book": book.title})
+        print(f"Book returned: {book.display_info()} from {member.display_info()}")
+        
+
