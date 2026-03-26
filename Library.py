@@ -48,24 +48,8 @@ class Library:
         self.items: list[dict] = []
         self.members: dict[str, Member] = {}
 
-    def add_item(self, item: LibraryItem):
-        self.items.append(item)
-
-    def register_member(self, member: Member):
-        self.members[member.member_id] = member
-
-    def find_item(self, title: str) -> LibraryItem | None:
-        for item in self.items:
-            if item.title == title:
-                return item
-        return None
-
-    def display_items(self):
-        for item in self.items:
-            print(item)
-
-    def display_members(self):
-        for member in self.members.values():
-            print(member)
-
-
+    def add_book(self, book: Book) -> None:
+        if book.isbn in self.items:
+            raise ValueError("Book with this ISBN already exists.")
+        self.items[book.isbn] = book
+        print(f"Book added: {book.display_info()}")
