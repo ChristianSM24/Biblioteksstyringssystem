@@ -108,6 +108,38 @@ def book_management_menu(lib: Library) -> None:
             else:
                 print("Invalid choice.")
 
+    def circulation_management_menu(lib: Library) -> None:
+        options = {
+            "1": "Report Book",
+            "2": "Return Book",
+            "0": "Back to Main Menu"
+        }
+        while True:
+            print_header("Circulation Management Menu")
+            for key, value in options.items():
+                print(f"{key}. {value}")
+            choice = input("Enter your choice: ")
+            if choice == "1":
+                # Check out book logic
+                bid = input("Enter book ID to check out: ").strip()
+                mid = input("Enter member ID: ").strip()
+                try:
+                    lib.check_out_book(bid, mid)
+                except ValueError as e:
+                    print(f"Error checking out book: {e}")
+            elif choice == "2":
+                # Return book logic
+                bid = input("Enter book ID to return: ").strip()
+                mid = input("Enter member ID: ").strip()
+                try:
+                    lib.return_book(bid, mid)
+                except ValueError as e:
+                    print(f"Error returning book: {e}")
+            elif choice == "0":
+                break
+            else:
+                print("Invalid choice.")
+
 # Main Menu
 def main() -> None:
     lib = Library("Py-Library")
