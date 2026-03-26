@@ -157,5 +157,17 @@ class Library:
         del member.borrowed_items[book.isbn]
         member.history.append({"action": "return", "book": book.title})
         print(f"Book returned: {book.display_info()} from {member.display_info()}")
-        
 
+## Helper Methods
+
+    def _get_book(self, isbn: str) -> Book:
+        book = self.books.get(isbn)
+        if not book:
+            raise ValueError("Book not found.")
+        return book
+
+    def _get_member(self, member_id: str) -> Member:
+        member = self.members.get(member_id)
+        if not member:
+            raise ValueError("Member not found.")
+        return member
