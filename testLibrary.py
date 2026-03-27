@@ -232,3 +232,19 @@ class TestBook:
 
 class TestSearch:
     def test_search_books_by_title(self, lib_with_data):
+        results = lib_with_data.search_books("1984")
+        assert any(b.isbn == "1234567890" for b in results)
+
+    def test_search_books_by_author(self, lib_with_data):
+        results = lib_with_data.search_books("George Orwell")
+        assert any(b.isbn == "1234567890" for b in results)
+
+    def test_search_case_insensitivity(self, lib_with_data):
+        results = lib_with_data.search_books("GEORGE ORWELL")
+        assert len(results) >= 1
+
+    def test_search_no_results(self, lib_with_data):
+        results = lib_with_data.search_books("Nonexistent Book")
+        assert results == []
+        
+##
