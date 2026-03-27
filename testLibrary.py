@@ -180,5 +180,55 @@ class TestBook:
                 lib_with_data.remove_member("67890")
                 
 ## Circulation Management tests
+    class TestCirculationManagement:
+        def test_issue_books_decrements_available(self, lib_with_data):
+            lib_with_data.issue_books("1234567890", "67890")
+            assert lib_with_data.books["1234567890"].available_copies == 4
 
-    
+        def test_issue_updates_member(self, lib_with_data):
+            lib_with_data.issue_books("1234567890", "67890")
+            assert "1234567890" in lib_with_data.members["67890"].borrowed_books
+            
+        def test_issue_no_copies_raises(self, lib_with_data):
+            lib_with_data.issue_books("1234567890", "67890")
+            lib_with_data.issue_books("1234567890", "12345")
+            lib_with_data.add_member(Member("Bob", "bob@example.com", "44444"))
+        with pytest.raises(RuntimeError):
+            lib_with_data.issue_books("1234567890", "44444")
+
+        def test_issue_nonexistent_book_raises(self, lib_with_data):
+            with pytest.raises(KeyError):
+                lib_with_data.issue_books("0000000000", "67890")
+
+        def test_issue_nonexistent_member_raises(self, lib_with_data):
+            with pytest.raises(KeyError):
+                lib_with_data.issue_books("1234567890", "00000")
+
+        def test_return_book_increments_available(self, lib_with_data):
+            lib_with_data.issue_books("1234567890", "67890")
+            lib_with_data.return_books("1234567890", "67890")
+            assert lib_with_data.books["1234567890"].available_copies == 5
+
+        def test_return_not_borrowed_book(self, lib_with_data):
+            with pytest.raises(ValueError):
+                lib_with_data.return_books("1234567890", "67890")
+                
+        def test_full_cycle(self, lib_with_data):
+            """Issue -> verify state -> return -> verify restored state."""
+            
+            book = lib_with_data.books["1234567890"]
+            member = lib_with_data.members["67890"]
+            initial_available = book.available_copies
+
+            lib_with_data.issue_books("1234567890", "67890")
+            assert book.available_copies == initial_available - 1
+
+            lib_with_data.return_books("1234567890", "67890")
+            assert book.available_copies == initial_available
+            assert "1234567890" not in member.borrowed_books
+            assert len(member.borrowed_books) == 2
+
+## Search Tests
+
+class TestSearch:
+    def test_search_books_by_title(self, lib_with_data):
