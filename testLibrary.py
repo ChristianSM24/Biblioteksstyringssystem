@@ -59,4 +59,75 @@ class TestBook:
             assert sample_member.name == "John Doe"
             assert sample_member.email == "johndoe@example.com"
             assert sample_member.member_id == "12345"
-       
+            assert sample_member.borrowed_items == {}
+            assert sample_member.history == []
+            
+        def test_borrow_book(self, sample_member):
+            sample_member.borrow_book("1234567890")
+            assert "1234567890" in sample_member.borrowed_items
+
+        def test_borrow_same_book_twice(self, sample_member):
+            sample_member.borrow_book("1234567890")
+            with pytest.raises(ValueError):
+                sample_member.borrow_book("1234567890")
+
+        def test_return_book(self, sample_member):
+            sample_member.borrow_book("1234567890")
+            sample_member.return_book("1234567890")
+            assert "1234567890" not in sample_member.borrowed_items
+
+        def test_return_non_borrowed_book(self, sample_member):
+            with pytest.raises(ValueError):
+                sample_member.return_book("0987654321")
+                
+        def test_history_recorded(self, sample_member):
+            sample_member.borrow_book("1234567890")
+            sample_member.return_book("1234567890")
+            actions = [h["action"] for h in sample_member.history]
+            assert actions == ["borrow", "return"]
+
+        def test_display_info_polymorphism(self, sample_member):
+            info = sample_member.display_info()
+            assert "John Doe" in info
+            assert "johndoe@example.com" in info
+            assert "12345" in info
+
+        def test_display_history_no_history(self, sample_member):
+            result = sample_member.display_history()
+            assert result == "No borrowing history"
+
+        def test_display_history_with_record(self, sample_member):
+            sample_member.borrow_book("1234567890")
+            sample_member.return_book("1234567890")
+            result = sample_member.display_history()
+            assert "borrowed" in result
+            assert "returned" in result
+            
+## Library Book Management
+
+    def test_add_book(self, lib_with_data):
+        assert "1234567890" in lib_with_data.books
+        assert "0987654321" in lib_with_data.books
+
+    def test_add_duplicate_book(self, lib_with_data):
+        with pytest.raises(ValueError):
+            lib_with_data.add_book(Book("1984", "George Orwell", 5, "1234567890"))
+
+    def test_remove_book(self, lib_with_data):
+        lib_with_data.remove_book("1234567890")
+        assert "1234567890" not in lib_with_data.books
+
+    def test_remove_non_existent_book(self, lib_with_data):
+        with pytest.raises(ValueError):
+            lib_with_data.remove_book("0000000000")
+
+    def test_remove_checked_out_book(self, lib_with_data):
+        lib_with_data.check_out_book("1234567890", "12345")
+        lib_with_data.remove_book("1234567890")
+        assert "1234567890" not in lib_with_data.books
+
+    def test_update_book_title(self, lib_with_data):
+        lib_with_data.update_book_title("1234567890", "New Title")
+        assert lib_with_data.books["1234567890"].title == "New Title"
+        
+    def

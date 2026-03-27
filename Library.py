@@ -46,14 +46,14 @@ class Member(LibraryItem):
 class Library:
     def __init__(self, name: str = "Library"):
         self.name = name
-        self.items: dict[str, Book] = {}
+        self.books: dict[str, Book] = {}
         self.members: dict[str, Member] = {}
 
 ## Book Management System
     def add_book(self, book: Book) -> None:
-        if book.isbn in self.items:
+        if book.isbn in self.books:
             raise ValueError("Book with this ISBN already exists.")
-        self.items[book.isbn] = book
+        self.books[book.isbn] = book
         print(f"Book added: {book.display_info()}")
 
     def remove_book(self, isbn: str) -> None:
@@ -61,7 +61,7 @@ class Library:
         if book.available < book.copies:
             raise RuntimeError("Book is currently borrowed and cannot be removed.")
 
-        del self.items[isbn]
+        del self.books[isbn]
         print(f"Book removed: {book.display_info()}")
 
     def update_book(self, isbn: str, title: str = None, author: str = None, copies: int = None) -> None:
