@@ -129,5 +129,56 @@ class TestBook:
     def test_update_book_title(self, lib_with_data):
         lib_with_data.update_book_title("1234567890", "New Title")
         assert lib_with_data.books["1234567890"].title == "New Title"
-        
-    def
+
+    def test_update_book_author(self, lib_with_data):
+        lib_with_data.update_book_author("1234567890", "New Author")
+        assert lib_with_data.books["1234567890"].author == "New Author"
+
+    def test_update_book_copies(self, lib_with_data):
+        lib_with_data.update_book_copies("1234567890", 10)
+        assert lib_with_data.books["1234567890"].copies == 10
+
+    def test_update_copies_below_minimum(self, lib_with_data):
+        assert lib_with_data.issue_books("1234567890", "12345")
+        with pytest.raises(ValueError):
+            lib_with_data.update_book_copies("1234567890", copies=1)
+
+    def test_update_nonexistent_book(self, lib_with_data):
+        with pytest.raises(ValueError):
+            lib_with_data.update_book_title("0000000000", title="New Title")
+            
+## Member Management Tests
+    class TestMemberManagement:
+        def test_add_member(self, lib_with_data):
+            new_member = Member("Alice", "alice@example.com", "67890")
+            lib_with_data.add_member(new_member)
+            assert new_member.member_id in lib_with_data.members
+
+        def test_add_duplicate_member(self, lib_with_data):
+            with pytest.raises(ValueError):
+                lib_with_data.add_member(Member("Alice", "alice@example.com", "67890"))
+
+        def test_remove_member(self, lib_with_data):
+            lib_with_data.remove_member("67890")
+            assert "67890" not in lib_with_data.members
+
+        def test_remove_non_existent_member(self, lib_with_data):
+            with pytest.raises(ValueError):
+                lib_with_data.remove_member("00000")
+
+        def test_update_member_info(self, lib_with_data):
+            lib_with_data.update_member_info("67890", email="newemail@example.com")
+            assert lib_with_data.members["67890"].email == "newemail@example.com"
+
+        def test_update_nonexistent_member(self, lib_with_data):
+            with pytest.raises(ValueError):
+                lib_with_data.update_member_info("00000", email="newemail@example.com")
+
+        def test_remove_member_with_active_loans(self, lib_with_data):
+            lib_with_data.issue_books("1234567890", "67890")
+            with pytest.raises(ValueError):
+                lib_with_data.remove_member("67890")
+                
+## Circulation Management tests
+
+    
