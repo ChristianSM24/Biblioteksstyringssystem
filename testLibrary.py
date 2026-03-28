@@ -28,29 +28,29 @@ def lib_with_data():
 
 class TestBook:
     def test_creation(self, sample_book):
-        assert sample_book.title == "1984"
-        assert sample_book.author == "George Orwell"
-        assert sample_book.book_isbn == "1234567890"
-        
-        assert sample_book.copies == 5
-        assert sample_book.available == 5
+        assert sample_Book.title == "1984"
+        assert sample_Book.author == "George Orwell"
+        assert sample_Book.book_isbn == "1234567890"
+
+        assert sample_Book.copies == 5
+        assert sample_Book.available == 5
 
     def test_negative_copies_raises(self):
         with pytest.raises(ValueError):
             Book("Invalid Book", "Unknown", -1, "0000000000")
 
-    def test_display_info_contains_key_fields(self, sample_book):
-        info = sample_book.display_info()
+    def test_display_info_contains_key_fields(self, sample_Book):
+        info = sample_Book.display_info()
         assert "1984" in info
         assert "George Orwell" in info
         assert "1234567890" in info
 
-    def test_str_uses_display_info(self, sample_book):
-        assert str(sample_book) == sample_book.display_info()
+    def test_str_uses_display_info(self, sample_Book):
+        assert str(sample_Book) == sample_Book.display_info()
 
-    def test_repr(self, sample_book):
-       assert "1984" in repr(sample_book)
-       
+    def test_repr(self, sample_Book):
+       assert "1984" in repr(sample_Book)
+
 
 # Member Tests
 class TestMember:
