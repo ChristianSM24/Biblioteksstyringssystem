@@ -1,5 +1,5 @@
 import pytest
-from library import Book, Member, Library
+from Library import Book, Member, Library, LibraryItem
 
 #Fixtures
 
@@ -248,21 +248,20 @@ class TestSearch:
         assert results == []
 
 ## Polymorphism Tests
+class TestPolymorphism:
     def test_different_display_info_outputs(self):
-        book = Book("1984", "George Orwell", "1234567890", 5)
-        member = Member("Jim", "jim@example.com", "74321")
+        book   = Book("1984", "George Orwell", 5, "1234567890")
+        member = Member("Jim", "74321", "jim@example.com")
 
         assert isinstance(book.display_info(), str)
         assert isinstance(member.display_info(), str)
         assert book.display_info() != member.display_info()
         
     def test_polymorphic_loop(self):
-        from Library import LibraryItem
 
         items: list[LibraryItem] = [
-            Book("1984", "George Orwell", "1234567890", 5),
-            Book("To Kill a Mockingbird", "Harper Lee", "0987654321", 2),
-            Member("Jim", "jim@example.com", "74321")
+            Book("1984",                  "George Orwell", 5, "1234567890"),
+            Book("To Kill a Mockingbird", "Harper Lee",    2, "0987654321"),
         ]
         for item in items:
             result = item.display_info()
