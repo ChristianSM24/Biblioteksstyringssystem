@@ -10,6 +10,7 @@ def pause() -> None:
     input("\nPress Enter to continue...")
 
 # Sub Menus
+## Book Management Menu
 def book_management_menu(lib: Library) -> None:
     options = {
         "1": "Add Book",
@@ -62,15 +63,16 @@ def book_management_menu(lib: Library) -> None:
             print("Invalid choice.")
         pause()
 
-    def member_management_menu(lib: Library) -> None:
-        options = {
-            "1": "Add Member",
-            "2": "Remove Member",
-            "3": "Update Member",
-            "4": "Show Membber History",
+# Member Management Menu
+def member_management_menu(lib: Library) -> None:
+    options = {
+        "1": "Add Member",
+        "2": "Remove Member",
+        "3": "Update Member",
+        "4": "Show Member History",
             "0": "Back to Main Menu"
         }
-        while True:
+    while True:
             print_header("Member Management Menu")
             for key, value in options.items():
                 print(f"{key}. {value}")
@@ -113,7 +115,8 @@ def book_management_menu(lib: Library) -> None:
             else:
                 print("Invalid choice.")
 
-    def circulation_management_menu(lib: Library) -> None:
+## Circulation UI
+def circulation_management_menu(lib: Library) -> None:
         options = {
             "1": "Report Book",
             "2": "Return Book",
@@ -129,7 +132,7 @@ def book_management_menu(lib: Library) -> None:
                 bid = input("Enter book ID to check out: ").strip()
                 mid = input("Enter member ID: ").strip()
                 try:
-                    lib.check_out_book(bid, mid)
+                    lib.issue_book(bid, mid)
                 except ValueError as e:
                     print(f"Error checking out book: {e}")
             elif choice == "2":
@@ -172,11 +175,9 @@ def main() -> None:
         if choice == "1":
             book_management_menu(lib)
         elif choice == "2":
-            # placeholder for member management
-            print("Member management not implemented yet.")
+            member_management_menu(lib)
         elif choice == "3":
-            # placeholder for circulation management
-            print("Circulation management not implemented yet.")
+            circulation_management_menu(lib)
         elif choice == "4":
             lib.display_books()
         elif choice == "5":
