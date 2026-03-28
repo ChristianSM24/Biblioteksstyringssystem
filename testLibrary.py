@@ -56,10 +56,10 @@ class TestBook:
 class TestMember:
         def test_creation(self, sample_member):
             assert sample_member.name == "John Doe"
-        assert sample_member.email == "johndoe@example.com"
-        assert sample_member.member_id == "12345"
-        assert sample_member.borrowed_items == {}
-        assert sample_member.history == []
+            assert sample_member.email == "johndoe@example.com"
+            assert sample_member.member_id == "12345"
+            assert sample_member.borrowed_items == {}
+            assert sample_member.history == []
             
         def test_borrow_book(self, sample_member):
             sample_member.borrow_book("1234567890")
@@ -122,7 +122,7 @@ class TestLibraryBookManagement:
 
     def test_remove_checked_out_book_raises(self, lib_with_data):
         lib_with_data.issue_book("12345", "1234567890")
-        with pytest.raises(ValueError):
+        with pytest.raises(RuntimeError):
             lib_with_data.remove_book("1234567890")
 
     def test_update_book_title(self, lib_with_data):
@@ -169,11 +169,8 @@ class TestMemberManagement:
             lib_with_data.update_member_info("67890", email="newemail@example.com")
             assert lib_with_data.members["67890"].email == "newemail@example.com"
             
-        def update_member_info(self, member_id: str, name: str = None, email: str = None) -> None:
-            self.update_member(member_id, name=name, email=email)
-
         def test_update_nonexistent_member(self, lib_with_data):
-            with pytest.raises(RuntimeError):
+            with pytest.raises(ValueError):
                 lib_with_data.update_member_info("00000", email="newemail@example.com")
 
         def test_remove_member_with_active_loans(self, lib_with_data):
@@ -195,7 +192,7 @@ class TestCirculationManagement:
             lib_with_data.issue_book("12345", "0987654321")
             lib_with_data.add_member(Member("Bob", "44444", "bob@example.com"))
             with pytest.raises(RuntimeError):
-                lib_with_data.issue_book("44444", "1234567890")
+                lib_with_data.issue_book("44444", "0987654321")
 
         def test_issue_nonexistent_book_raises(self, lib_with_data):
             with pytest.raises((ValueError, KeyError)):
