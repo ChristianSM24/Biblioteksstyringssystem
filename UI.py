@@ -1,12 +1,14 @@
 from Library import Library, Book, Member
 
 def print_header(title: str) -> None:
+    # Prints a formatted header for each menu
     print(f"\n{'-'*60}")
     print(f" {title}")
     print(f"{'-'*60}")
 
 
 def pause() -> None:
+    # Pauses the program until the user presses Enter
     input("\nPress Enter to continue...")
 
 # Sub Menus
@@ -132,7 +134,7 @@ def circulation_management_menu(lib: Library) -> None:
             print_header("Circulation Management Menu")
             for key, value in options.items():
                 print(f"{key}. {value}")
-            choice = input("Enter your choice: ")
+            choice = input("Enter your choice: ").strip()
             
             if choice == "1":
                 # Issue book logic - asks for member ID and book ISBN
@@ -155,11 +157,10 @@ def circulation_management_menu(lib: Library) -> None:
                 break
             else:
                 print("Invalid choice.")
-                pause()
+            pause()
 
 # Main Menu
 def main() -> None:
-    
     lib = Library("Py-Library")
 
 # Sample Data - adds books and members with the program when started

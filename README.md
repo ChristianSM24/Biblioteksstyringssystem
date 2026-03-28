@@ -10,6 +10,7 @@ Biblioteksstyringssystem/
 Requirements
     Python 3.10 or higher
     pytest (for running tests)
+        -> Install pytest: pip3 install pytest
 
 OOP Concepts demonstrated
 
@@ -58,4 +59,24 @@ TestSearch                          Search with title/author,                 ca
 TestPolymorphism                    Verification of polymorphic behavior (display_info())
 
 
+    The Expected Result should be 45/45 passes.
+
+
+CLass Overview
+
+LibraryItem (Abstract Base Class)
+
+Defines display_info() -> str interface that all of the library entitites must implement, enforcing polymorphism throughout the system.
+
+Book(LibraryItem)
+
+This class represents the book Item, that is tracked through attributes (isbn,copies, available). It will Raise a Value Error if there are negative copies in the system.
+
+Member
+
+This class represents the Member in the library system. It tracks borrowed_items and history. This class contains borrow_book(), return_book() and display_history() methods that can be used.
+
+Library
+
+This is the central managment system, coordinating books and members. This class uses dictionaries and lists for lookup by ISBN or member ID. Establishes rules for blocking removal of borrowed books or members that are actively borrowing a book.
 

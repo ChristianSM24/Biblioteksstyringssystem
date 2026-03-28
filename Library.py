@@ -189,6 +189,7 @@ class Library:
         print(f"Member updated: {member.display_info()}")
     
     def update_member_info(self, member_id: str, name: str = None, email: str = None) -> None:
+        # Updates member information, used by tests
         self.update_member(member_id, name=name, email=email)
         
     def display_members(self) -> None:
@@ -215,8 +216,8 @@ class Library:
             print(f"\nSearch Results for '{query}':")
             for book in results:
                 print(" ", book.display_info())
-            else:
-                print("No books found.")
+        else:
+            print("No books found.")
         return results
 
 ## Circulation system
@@ -248,16 +249,16 @@ class Library:
         print(f"Returned '{book.title}' from {member.name}.")
 
 ## Helper Methods
-# This section contains helper methods for internal use, helps looking up books by their ISBN.
 
     def _get_book(self, isbn: str) -> Book:
+        # Internal helper that retrieves a book by ISBN
         book = self.books.get(isbn)
         if not book:
             raise ValueError("Book not found.")
         return book
 
-#Internal helper that retrieves a member by ID
     def _get_member(self, member_id: str) -> Member:
+        # Internal helper that retrieves a member by ID
         member = self.members.get(member_id)
         if not member:
             raise ValueError("Member not found.")
