@@ -81,8 +81,9 @@ def member_management_menu(lib: Library) -> None:
                 # Add member logic
                 mid = input("Enter member ID: ").strip()
                 name = input("Enter member name: ").strip()
+                email = input("Enter member email: ").strip()
                 try:
-                    lib.add_member(Member(name, mid))
+                    lib.add_member(Member(name, mid, email))
                 except ValueError as e:
                     print(f"Error adding member: {e}")
                     
@@ -105,7 +106,7 @@ def member_management_menu(lib: Library) -> None:
                 # Search member logic
                 mid = input("Member ID: ").strip()
                 try:
-                    m = lib.members(mid)
+                    m = lib.members[mid]
                     print(m.display_history())
                 except KeyError:
                     print(f"Member with ID {mid} not found.")
@@ -139,6 +140,7 @@ def circulation_management_menu(lib: Library) -> None:
                 # Return book logic
                 bid = input("Enter book ID to return: ").strip()
                 mid = input("Enter member ID: ").strip()
+                
                 try:
                     lib.return_book(bid, mid)
                 except ValueError as e:
