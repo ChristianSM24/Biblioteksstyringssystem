@@ -4,24 +4,24 @@ from Library import Book, Member, Library, LibraryItem
 #Fixtures
 
 @pytest.fixture
-# A sample book fixture with default values used across multiple Book tests
 def sample_book():
+# A sample book fixture with default values used across multiple Book tests
     return Book("1984", "George Orwell", 5, "1234567890")
 
 @pytest.fixture
-# A sample book fixture with a single copy, used for testing edge cases
 def single_sample_book():
+# A sample book fixture with a single copy, used for testing edge cases
     return Book("To Kill a Mockingbird", "Harper Lee", 1, "0987654321")
 
 @pytest.fixture
+def sample_member():
 # A sample member fixture with default values used across multiple Member tests
 # No prior borrowing history
-def sample_member():
     return Member("John Doe", "12345", "johndoe@example.com")
 
 @pytest.fixture
-# A library fixture with pre-populated data for testing
 def lib_with_data():
+# A library fixture with pre-populated data for testing
     lib = Library("Test Library")
     lib.add_book(Book("1984", "George Orwell", 5, "1234567890"))
     lib.add_book(Book("To Kill a Mockingbird", "Harper Lee", 1, "0987654321"))
@@ -257,7 +257,7 @@ class TestCirculationManagement:
         def test_full_cycle(self, lib_with_data):
             # Test the full cycle of issuing and returning a book
             # verifies that the state changes, and if returned, restores the state.
-            """Issue -> verify state -> return -> verify restored state."""
+            # Issue -> verify state -> return -> verify restored state.
             
             book = lib_with_data.books["1234567890"]
             member = lib_with_data.members["67890"]
