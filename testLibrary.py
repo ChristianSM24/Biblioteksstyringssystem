@@ -231,7 +231,6 @@ class TestCirculationManagement:
             
 
 ## Search Tests
-
 class TestSearch:
     def test_search_books_by_title(self, lib_with_data):
         results = lib_with_data.search_books("1984")

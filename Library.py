@@ -63,13 +63,13 @@ class Member:
         
     def display_history(self) -> str:
         if not self.history:
-            return "No borrowing history."
+            return "No borrowing history"
         lines = []
         for entry in self.history:
             if entry["action"] == "borrow":
-                lines.append(f"Borrowed: {entry['isbn']} on {entry['date']}")
+                lines.append(f"borrowed: {entry['isbn']} on {entry['date']}")
             else:
-                lines.append(f"Returned: {entry['isbn']} on {entry['date']}")
+                lines.append(f"returned: {entry['isbn']} on {entry['date']}")
         return "\n".join(lines)
 
 class Library:
@@ -145,8 +145,10 @@ class Library:
         if name is not None: member.name = name
         if email is not None: member.email = email
         print(f"Member updated: {member.display_info()}")
+    
+    def update_member_info(self, member_id: str, name: str = None, email: str = None) -> None:
+        self.update_member(member_id, name=name, email=email)
         
-
     def display_members(self) -> None:
         if not self.members:
             print("No members registered.")
@@ -179,7 +181,7 @@ class Library:
         member = self._get_member(member_id)
         book = self._get_book(book_isbn)
         if book.available < 1:
-            raise ValueError("Book is not available for borrowing.")
+            raise RuntimeError("Book is not available for borrowing.")
         book.available -= 1
         member.borrowed_items[book_isbn] = book.title
         member.history.append({"action": "borrow", "isbn": book_isbn, "date": datetime.now().strftime("%Y-%m-%d %H:%M")})
