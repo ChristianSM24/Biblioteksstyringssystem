@@ -2,6 +2,8 @@ from datetime import datetime
 from abc import ABC, abstractmethod
 
 class LibraryItem(ABC):
+    # Abstract base class for all library items, enforces polymorphism by requiring subclasses to implement display_info().
+    # Book and Member class inherit from this class.
     def __init__(self, title: str, author: str, copies: int):
         #this will store the attributes shared throughout all library items
         self.title = title
@@ -12,12 +14,15 @@ class LibraryItem(ABC):
     @abstractmethod
     def display_info(self) -> str:
         pass
+    # Polymorphism, both Book and Member classes must implement display_info(), but returns a string formatted differently when method is called.
     
     def __str__(self) -> str:
         # String representation of the library item
         return self.display_info()
 
 class Book(LibraryItem):
+    # Represents a book in the library
+    # Will Inherit LibraryItem class, while adding ISBN and available copies
     def __init__(self, title: str, author: str, copies: int, isbn: str):
         # This will ensure that copies are non-negative before creating a book
         if copies < 0:
@@ -37,6 +42,9 @@ class Book(LibraryItem):
 
 
 class Member:
+    # Represents a member of the library, can borrow and return books
+    # Does not inherit from LibraryItem, as members are not items in the library
+    #polymorphic, must implement display_info()
     def __init__(self, name: str, member_id: str, email: str):
         self.name = name
         self.member_id = member_id
@@ -45,12 +53,15 @@ class Member:
         self.history: list[dict] = []  # Stores borrowing history
 
     def display_info(self) -> str:
+        # Polymorphic implementation
         return f"Member Name: {self.name}, Member ID: {self.member_id}, Email: {self.email}"
 
     def __repr__(self):
         return f"<Member: {self.name}, ID: {self.member_id}>"
     
     def borrow_book(self, isbn: str) -> None:
+        # Records that the member has borrowed a book
+        # Raises ValueError if the book is already borrowed
         if isbn in self.borrowed_items:
             raise ValueError(f"Already Borrowed book {isbn}.")
         # A record for the exact time the book was borrowed
@@ -59,6 +70,8 @@ class Member:
         self.history.append({"action": "borrow", "isbn": isbn, "date": timestamp})
 
     def return_book(self, isbn: str) -> None:
+        # Records that the member has returned a book
+        # Raises ValueError if the book was not borrowed
         if isbn not in self.borrowed_items:
             raise ValueError(f"Book {isbn} was not borrowed.")
         # A record for the exact time the book was returned
@@ -67,6 +80,8 @@ class Member:
         del self.borrowed_items[isbn]  # Removes from active borrow list
         
     def display_history(self) -> str:
+        # Displays the borrowing history of the member
+        # Returns a string representation of the borrowing history
         if not self.history:
             return "No borrowing history"
         lines = []
@@ -78,6 +93,9 @@ class Member:
         return "\n".join(lines)
 
 class Library:
+    # Represents a library that manages books and members
+    # Contains methods for adding, removing, and updating books and members
+    # Uses dictionaries for efficient lookups through ISBN or Member ID
     def __init__(self, name: str = "Library"):
         self.name = name
         self.books: dict[str, Book] = {}  # ISBN to Book mapping
@@ -85,12 +103,16 @@ class Library:
 
 ## Book Management System
     def add_book(self, book: Book) -> None:
+        # Adds a new book to the library
+        # Raises ValueError if the book already exists
         if book.isbn in self.books:
             raise ValueError("Book with this ISBN already exists.")
         self.books[book.isbn] = book
         print(f"Book added: {book.display_info()}")
 
     def remove_book(self, isbn: str) -> None:
+        # Removes a book from the library
+        # Raises RuntimeError if the book is currently borrowed
         book = self._get_book(isbn)
         # Prevents removal if copies are borrowed
         if book.available < book.copies:
@@ -100,6 +122,8 @@ class Library:
         print(f"Book removed: {book.display_info()}")
 
     def update_book(self, isbn: str, title: str = None, author: str = None, copies: int = None) -> None:
+        # Updates the details of an existing book
+        # Raises ValueError if the books copies count is lower than the current amount borrowed
         book = self._get_book(isbn)
         if title is not None: book.title = title
         if author is not None: book.author = author
@@ -114,15 +138,19 @@ class Library:
         print(f"Book updated: {book.display_info()}")
 
     def update_book_title(self, isbn: str, title: str) -> None:
+        # Efficient method to update book title
         self.update_book(isbn, title=title)
 
     def update_book_author(self, isbn: str, author: str) -> None:
+        # Efficient method to update book author
         self.update_book(isbn, author=author)
 
     def update_book_copies(self, isbn: str, copies: int) -> None:
+        # Efficient method to update book copies
         self.update_book(isbn, copies=copies)
 
     def display_books(self) -> None:
+        # Displays the list of books in the library
         if not self.books:
             print("No books available.")
             return
@@ -136,12 +164,16 @@ class Library:
 ## Member Management System
 
     def add_member(self, member: Member) -> None:
+        # Adds a new member to the library
+        # Raises ValueError if the member already exists
         if member.member_id in self.members:
             raise ValueError("Member with this ID already exists.")
         self.members[member.member_id] = member
         print(f"Member added: {member.display_info()}")
 
     def remove_member(self, member_id: str) -> None:
+        # Removes a member from the library
+        # Raises RuntimeError if the member has borrowed items
         member = self._get_member(member_id)
         # Prevents removal if member has borrowed items
         if member.borrowed_items:
@@ -150,6 +182,7 @@ class Library:
         print(f"Member removed: {member.name}")
 
     def update_member(self, member_id: str, name: str = None, email: str = None) -> None:
+        # Updates the details of an existing member
         member = self._get_member(member_id)
         if name is not None: member.name = name
         if email is not None: member.email = email
@@ -159,6 +192,7 @@ class Library:
         self.update_member(member_id, name=name, email=email)
         
     def display_members(self) -> None:
+        # Displays the list of members in the library
         if not self.members:
             print("No members registered.")
             return
@@ -172,7 +206,7 @@ class Library:
 ## Search Function 
 
     def search_books(self, query: str) -> list:
-
+        # Searches for books by title or author, Case-insensitivity
         q = query.lower()
         # Builds a list of matching books according to search attributes
         results = [b for b in self.books.values() 
@@ -188,6 +222,8 @@ class Library:
 ## Circulation system
 
     def issue_book(self, member_id: str, book_isbn: str) -> None:
+        # Issues a book to a member
+        # Raises RuntimeError if the book is currently borrowed or none available
         member = self._get_member(member_id)
         book = self._get_book(book_isbn)
         if book.available < 1:
@@ -199,6 +235,8 @@ class Library:
         print(f"Issued '{book.title}' to {member.name}.")
 
     def return_book(self, member_id: str, book_isbn: str) -> None:
+        # Returns a book from a member
+        # Raises RuntimeError if the book was not borrowed by the member
         member = self._get_member(member_id)
         book = self._get_book(book_isbn)
         if book_isbn not in member.borrowed_items:
@@ -210,7 +248,7 @@ class Library:
         print(f"Returned '{book.title}' from {member.name}.")
 
 ## Helper Methods
-#This section contains helper methods for internal use, helps looking up books by their ISBN.
+# This section contains helper methods for internal use, helps looking up books by their ISBN.
 
     def _get_book(self, isbn: str) -> Book:
         book = self.books.get(isbn)

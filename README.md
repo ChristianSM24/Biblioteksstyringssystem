@@ -1,5 +1,5 @@
- Biblioteksstyringssystem — Library Management System
-A Python OOP project aimed at building a library management system, demonstrating the core OOP concepts: Abstraction, Inheritance, Classes and Polymorphism.
+Biblioteksstyringssystem — Library Management System
+    A Python OOP project aimed at building a library management system, demonstrating the core OOP concepts: Abstraction, Inheritance, Classes and Polymorphism.
 
 Biblioteksstyringssystem/
 ├── Library.py        # Core domain classes (LibraryItem, Book, Member, Library)
@@ -8,9 +8,8 @@ Biblioteksstyringssystem/
 └──   UI.py           # # Interactive command-line interface
 
 Requirements
-
-Python 3.10 or higher
-pytest (for running tests)
+    Python 3.10 or higher
+    pytest (for running tests)
 
 OOP Concepts demonstrated
 
