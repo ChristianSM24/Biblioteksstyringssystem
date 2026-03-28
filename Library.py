@@ -17,6 +17,9 @@ class LibraryItem(ABC):
 
 class Book(LibraryItem):
     def __init__(self, title: str, author: str, copies: int, isbn: str):
+        if copies < 0:
+            raise ValueError("Copies cannot be negative.")
+        
         super().__init__(title, author, copies)
         self.isbn = isbn
         self.available = copies
@@ -29,7 +32,7 @@ class Book(LibraryItem):
         return f"<Book: {self.title}, {status}>"
 
 
-class Member(LibraryItem):
+class Member:
     def __init__(self, name: str, member_id: str, email: str):
         self.name = name
         self.member_id = member_id
@@ -42,6 +45,32 @@ class Member(LibraryItem):
 
     def __repr__(self):
         return f"<Member: {self.name}, ID: {self.member_id}>"
+    
+    def borrow_book(self, isbn: str) -> None:
+        if isbn in self.borrowed_items:
+            raise ValueError(f"Already Borrowed book {isbn}.")
+        timestamp = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
+        self.borrowed_items[isbn] = timestamp
+        self.history.append({"action": "borrow", "isbn": isbn, "date": timestamp})
+
+    def return_book(self, isbn: str) -> None:
+        if isbn not in self.borrowed_items:
+            raise ValueError(f"Book {isbn} was not borrowed.")
+        
+        timestamp = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
+        self.history.append({"action": "return", "isbn": isbn, "date": timestamp})
+        del self.borrowed_items[isbn]
+        
+    def display_history(self) -> str:
+        if not self.history:
+            return "No borrowing history."
+        lines = []
+        for entry in self.history:
+            if entry["action"] == "borrow":
+                lines.append(f"Borrowed: {entry['isbn']} on {entry['date']}")
+            else:
+                lines.append(f"Returned: {entry['isbn']} on {entry['date']}")
+        return "\n".join(lines)
 
 class Library:
     def __init__(self, name: str = "Library"):
