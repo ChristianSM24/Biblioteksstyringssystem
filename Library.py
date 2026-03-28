@@ -3,6 +3,7 @@ from abc import ABC, abstractmethod
 
 class LibraryItem(ABC):
     def __init__(self, title: str, author: str, copies: int):
+        #this will store the attributes shared throughout all library items
         self.title = title
         self.author = author
         self.copies = copies
@@ -13,21 +14,24 @@ class LibraryItem(ABC):
         pass
     
     def __str__(self) -> str:
+        # String representation of the library item
         return self.display_info()
 
 class Book(LibraryItem):
     def __init__(self, title: str, author: str, copies: int, isbn: str):
+        # This will ensure that copies are non-negative before creating a book
         if copies < 0:
             raise ValueError("Copies cannot be negative.")
-        
+        # Calls the parent class constructor to set the attributes
         super().__init__(title, author, copies)
-        self.isbn = isbn
-        self.available = copies
+        self.isbn = isbn        # A unique identifier for the book - an ISBN
+        self.available = copies  # Follows how many copies are available for borrowing
 
     def display_info(self) -> str:
         return f"Book Title: {self.title}, Author: {self.author}, Copies Available: {self.available}, ISBN: {self.isbn}"
 
     def __repr__(self):
+        # Developer-friendly representation
         status = f"{self.available} available "
         return f"<Book: {self.title}, {status}>"
 
@@ -37,8 +41,8 @@ class Member:
         self.name = name
         self.member_id = member_id
         self.email = email
-        self.borrowed_items: dict[str, str] = {}
-        self.history: list[dict] = []
+        self.borrowed_items: dict[str, str] = {}  # Maps ISBN to borrow date
+        self.history: list[dict] = []  # Stores borrowing history
 
     def display_info(self) -> str:
         return f"Member Name: {self.name}, Member ID: {self.member_id}, Email: {self.email}"
@@ -49,6 +53,7 @@ class Member:
     def borrow_book(self, isbn: str) -> None:
         if isbn in self.borrowed_items:
             raise ValueError(f"Already Borrowed book {isbn}.")
+        # A record for the exact time the book was borrowed
         timestamp = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
         self.borrowed_items[isbn] = timestamp
         self.history.append({"action": "borrow", "isbn": isbn, "date": timestamp})
@@ -56,10 +61,10 @@ class Member:
     def return_book(self, isbn: str) -> None:
         if isbn not in self.borrowed_items:
             raise ValueError(f"Book {isbn} was not borrowed.")
-        
+        # A record for the exact time the book was returned
         timestamp = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
         self.history.append({"action": "return", "isbn": isbn, "date": timestamp})
-        del self.borrowed_items[isbn]
+        del self.borrowed_items[isbn]  # Removes from active borrow list
         
     def display_history(self) -> str:
         if not self.history:
@@ -75,8 +80,8 @@ class Member:
 class Library:
     def __init__(self, name: str = "Library"):
         self.name = name
-        self.books: dict[str, Book] = {}
-        self.members: dict[str, Member] = {}
+        self.books: dict[str, Book] = {}  # ISBN to Book mapping
+        self.members: dict[str, Member] = {}  # ID to Member mapping
 
 ## Book Management System
     def add_book(self, book: Book) -> None:
@@ -87,6 +92,7 @@ class Library:
 
     def remove_book(self, isbn: str) -> None:
         book = self._get_book(isbn)
+        # Prevents removal if copies are borrowed
         if book.available < book.copies:
             raise RuntimeError("Book is currently borrowed and cannot be removed.")
 
@@ -98,8 +104,10 @@ class Library:
         if title is not None: book.title = title
         if author is not None: book.author = author
         if copies is not None: 
+            # Ensure copies are non-negative to the current amount borrowed
             if copies < (book.copies - book.available):
                 raise ValueError("Cannot reduce copies below borrowed amount.")
+            # Adjusts the available copies by the delta
             delta = copies - book.copies
             book.available = max(0, book.available + delta)
             book.copies = copies
@@ -122,7 +130,7 @@ class Library:
         print(f" {self.name} - Book Catalog ({len(self.books)} titles)")
         print(f"\n{'-'*60}")
         for book in self.books.values():
-            print(" ", book.display_info())
+            print(" ", book.display_info()) # Polymorphic Call
         print(f"\n{'-'*60}")
         
 ## Member Management System
@@ -135,6 +143,7 @@ class Library:
 
     def remove_member(self, member_id: str) -> None:
         member = self._get_member(member_id)
+        # Prevents removal if member has borrowed items
         if member.borrowed_items:
             raise RuntimeError("Member has borrowed items and cannot be removed.")
         del self.members[member_id]
@@ -157,7 +166,7 @@ class Library:
         print(f" {self.name} - Member Directory ({len(self.members)} members)")
         print(f"\n{'-'*60}")
         for member in self.members.values():
-            print(" ", member.display_info())
+            print(" ", member.display_info()) # Polymorphic Call
         print(f"\n{'-'*60}")
 
 ## Search Function 
@@ -165,6 +174,7 @@ class Library:
     def search_books(self, query: str) -> list:
 
         q = query.lower()
+        # Builds a list of matching books according to search attributes
         results = [b for b in self.books.values() 
                    if q in b.title.lower() or q in b.author.lower()]
         if results:
@@ -182,6 +192,7 @@ class Library:
         book = self._get_book(book_isbn)
         if book.available < 1:
             raise RuntimeError("Book is not available for borrowing.")
+        # Decrements the available copies and records the borrowing event
         book.available -= 1
         member.borrowed_items[book_isbn] = book.title
         member.history.append({"action": "borrow", "isbn": book_isbn, "date": datetime.now().strftime("%Y-%m-%d %H:%M")})
@@ -192,12 +203,14 @@ class Library:
         book = self._get_book(book_isbn)
         if book_isbn not in member.borrowed_items:
             raise RuntimeError("Book was not borrowed by this member.")
+        # Increments the available copies and records the return event
         book.available += 1
         del member.borrowed_items[book_isbn]
         member.history.append({"action": "return", "isbn": book_isbn, "date": datetime.now().strftime("%Y-%m-%d %H:%M")})
         print(f"Returned '{book.title}' from {member.name}.")
 
 ## Helper Methods
+#This section contains helper methods for internal use, helps looking up books by their ISBN.
 
     def _get_book(self, isbn: str) -> Book:
         book = self.books.get(isbn)
@@ -205,6 +218,7 @@ class Library:
             raise ValueError("Book not found.")
         return book
 
+#Internal helper that retrieves a member by ID
     def _get_member(self, member_id: str) -> Member:
         member = self.members.get(member_id)
         if not member:
