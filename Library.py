@@ -76,6 +76,15 @@ class Library:
             book.copies = copies
         print(f"Book updated: {book.display_info()}")
 
+    def update_book_title(self, isbn: str, title: str) -> None:
+        self.update_book(isbn, title=title)
+
+    def update_book_author(self, isbn: str, author: str) -> None:
+        self.update_book(isbn, author=author)
+
+    def update_book_copies(self, isbn: str, copies: int) -> None:
+        self.update_book(isbn, copies=copies)
+
     def display_books(self) -> None:
         if not self.books:
             print("No books available.")
@@ -96,10 +105,18 @@ class Library:
         print(f"Member added: {member.display_info()}")
 
     def remove_member(self, member_id: str) -> None:
-        if member_id not in self.members:
-            raise ValueError("Member not found.")
+        member = self._get_member(member_id)
+        if member.borrowed_items:
+            raise RuntimeError("Member has borrowed items and cannot be removed.")
         del self.members[member_id]
-        print(f"Member removed: {member_id}")
+        print(f"Member removed: {member.name}")
+
+    def update_member(self, member_id: str, name: str = None, email: str = None) -> None:
+        member = self._get_member(member_id)
+        if name is not None: member.name = name
+        if email is not None: member.email = email
+        print(f"Member updated: {member.display_info()}")
+        
 
     def display_members(self) -> None:
         if not self.members:
@@ -114,10 +131,11 @@ class Library:
 
 ## Search Function 
 
-    def search_books(self, query: str) -> list[Book]:
+    def search_books(self, query: str) -> list:
 
         q = query.lower()
-        results = [b for b in self.books.values() if q in b.title.lower() or q in b.author.lower()]
+        results = [b for b in self.books.values() 
+                   if q in b.title.lower() or q in b.author.lower()]
         if results:
             print(f"\nSearch Results for '{query}':")
             for book in results:
@@ -129,34 +147,24 @@ class Library:
 ## Circulation system
 
     def issue_book(self, member_id: str, book_isbn: str) -> None:
-        member = self.members.get(member_id)
-        book = self.books.get(book_isbn)
-        if not member:
-            raise ValueError("Member not found.")
-        if not book:
-            raise ValueError("Book not found.")
+        member = self._get_member(member_id)
+        book = self._get_book(book_isbn)
         if book.available < 1:
-            raise RuntimeError("Book is not available for borrowing.")
-
+            raise ValueError("Book is not available for borrowing.")
         book.available -= 1
         member.borrowed_items[book_isbn] = book.title
-        member.history.append({"action": "borrow", "book": book.title})
-        print(f"Book issued: {book.display_info()} to {member.display_info()}")
+        member.history.append({"action": "borrow", "isbn": book_isbn, "date": datetime.now().strftime("%Y-%m-%d %H:%M")})
+        print(f"Issued '{book.title}' to {member.name}.")
 
     def return_book(self, member_id: str, book_isbn: str) -> None:
-        member = self.members.get(member_id)
-        book = self.books.get(book_isbn)
-        if not member:
-            raise ValueError("Member not found.")
-        if not book:
-            raise ValueError("Book not found.")
-        if book.isbn not in member.borrowed_items:
+        member = self._get_member(member_id)
+        book = self._get_book(book_isbn)
+        if book_isbn not in member.borrowed_items:
             raise RuntimeError("Book was not borrowed by this member.")
-
         book.available += 1
-        del member.borrowed_items[book.isbn]
-        member.history.append({"action": "return", "book": book.title})
-        print(f"Book returned: {book.display_info()} from {member.display_info()}")
+        del member.borrowed_items[book_isbn]
+        member.history.append({"action": "return", "isbn": book_isbn, "date": datetime.now().strftime("%Y-%m-%d %H:%M")})
+        print(f"Returned '{book.title}' from {member.name}.")
 
 ## Helper Methods
 
