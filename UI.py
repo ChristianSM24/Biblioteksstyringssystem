@@ -23,9 +23,9 @@ def book_management_menu(lib: Library) -> None:
         print_header("Book Management Menu")
         for key, value in options.items():
             print(f"{key}. {value}")
-        choice = input("Enter your choice: ")
+        choice = input("Enter your choice: ").strip()
         if choice == "1":
-            # Add book logic
+            # Add book logic - Below are inputs for each book detail that the user will enter.
             bid = input("Enter book ID: ").strip()
             title = input("Enter book title: ").strip()
             author = input("Enter book author: ").strip()
@@ -35,50 +35,53 @@ def book_management_menu(lib: Library) -> None:
             except ValueError as e:
                 print(f"Error adding book: {e}")
         elif choice == "2":
-            # Remove book logic
-            bid = input("Enter book ID to remove: ").strip()
+            # Remove book logic - input book ISBN to remove it from the library.
+            bid = input("Enter book ISBN to remove: ").strip()
             try:
                 lib.remove_book(bid)
-            except ValueError as e:
+            except (ValueError, RuntimeError) as e:
                 print(f"Error removing book: {e}")
         elif choice == "3":
-            # Update book logic
+            # Update book logic - updates the book details to new user inputs.
             bid = input("Enter book ID to update: ").strip()
             title = input("Enter new book title (Enter to Skip): ").strip() or None
             author = input("Enter new book author (Enter to Skip): ").strip() or None
             c_str = input("New copies (Enter to Skip): ").strip()
-            copies = int(c_str) if c_str else None
+            copies = int(c_str) if c_str else None #will only change it if the user entered an input.
             try:
                 lib.update_book(bid, title, author, copies)
-            except ValueError as e:
+            except (ValueError, RuntimeError) as e:
                 print(f"Error updating book: {e}")
         elif choice == "4":
-            # Search book logic
+            # Search book logic - searches by title and author
             q = input("Enter search query (title/author): ").strip()
             results = lib.search_books(q)
             
         elif choice == "0":
-            break
+            break #Returns the user back to main menu
         else:
             print("Invalid choice.")
-        pause()
+        pause() # Pauses before returning to the main menu
 
 # Member Management Menu
+
 def member_management_menu(lib: Library) -> None:
     options = {
         "1": "Add Member",
         "2": "Remove Member",
         "3": "Update Member",
         "4": "Show Member History",
-            "0": "Back to Main Menu"
+        "0": "Back to Main Menu"
+        
         }
     while True:
             print_header("Member Management Menu")
             for key, value in options.items():
                 print(f"{key}. {value}")
-            choice = input("Enter your choice: ")
+
+            choice = input("Enter your choice: ").strip()
             if choice == "1":
-                # Add member logic
+                # Add member logic - Collects the member details, while also registering the member in library.
                 mid = input("Enter member ID: ").strip()
                 name = input("Enter member name: ").strip()
                 email = input("Enter member email: ").strip()
@@ -88,22 +91,23 @@ def member_management_menu(lib: Library) -> None:
                     print(f"Error adding member: {e}")
                     
             elif choice == "2":
-                # Remove member logic
+                # Remove member logic 
                 mid = input("Enter member ID to remove: ").strip()
                 try:
                     lib.remove_member(mid)
-                except ValueError as e:
+                except (ValueError, RuntimeError) as e:
                     print(f"Error removing member: {e}")
             elif choice == "3":
-                # Update member logic
+                # Update member logic - updates member details, pressing enter will skip it
                 mid = input("Enter member ID to update: ").strip()
-                name = input("Enter new member name: ").strip()
+                name = input("Enter new member name: ").strip() or None
+                email = input("Enter new member email: ").strip() or None
                 try:
-                    lib.update_member(mid, name)
-                except ValueError as e:
+                    lib.update_member(mid, name=name, email=email)
+                except (ValueError, RuntimeError) as e:
                     print(f"Error updating member: {e}")
             elif choice == "4":
-                # Search member logic
+                # Search member logic - looks up member by ID and displays their history.
                 mid = input("Member ID: ").strip()
                 try:
                     m = lib.members[mid]
@@ -112,14 +116,15 @@ def member_management_menu(lib: Library) -> None:
                     print(f"Member with ID {mid} not found.")
                 
             elif choice == "0":
-                break
+                break #will return back to main menu
             else:
                 print("Invalid choice.")
+                pause()
 
 ## Circulation UI
 def circulation_management_menu(lib: Library) -> None:
         options = {
-            "1": "Report Book",
+            "1": "Issue Book",
             "2": "Return Book",
             "0": "Back to Main Menu"
         }
@@ -128,32 +133,36 @@ def circulation_management_menu(lib: Library) -> None:
             for key, value in options.items():
                 print(f"{key}. {value}")
             choice = input("Enter your choice: ")
+            
             if choice == "1":
-                # Check out book logic
-                bid = input("Enter book ID to check out: ").strip()
+                # Issue book logic - asks for member ID and book ISBN
+                bid = input("Enter book ISBN to check out: ").strip()
                 mid = input("Enter member ID: ").strip()
                 try:
                     lib.issue_book(bid, mid)
-                except ValueError as e:
+                except (ValueError, RuntimeError) as e:
                     print(f"Error checking out book: {e}")
             elif choice == "2":
-                # Return book logic
-                bid = input("Enter book ID to return: ").strip()
+                # Return book logic - Returns a borrowed book from member.
+                bid = input("Enter book ISBN to return: ").strip()
                 mid = input("Enter member ID: ").strip()
                 
                 try:
                     lib.return_book(bid, mid)
-                except ValueError as e:
+                except (ValueError, RuntimeError) as e:
                     print(f"Error returning book: {e}")
             elif choice == "0":
                 break
             else:
                 print("Invalid choice.")
+                pause()
 
 # Main Menu
 def main() -> None:
+    
     lib = Library("Py-Library")
 
+# Sample Data - adds books and members with the program when started
     lib.add_book(Book("1984", "George Orwell", 5, "1234567890"))
     lib.add_book(Book("To Kill a Mockingbird", "Harper Lee", 1, "0987654321"))
     lib.add_member(Member("Alice", "M001", "alice@example.com"))
