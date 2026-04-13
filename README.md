@@ -80,3 +80,5 @@ Library
 
 This is the central managment system, coordinating books and members. This class uses dictionaries and lists for lookup by ISBN or member ID. Establishes rules for blocking removal of borrowed books or members that are actively borrowing a book.
 
+Author: Christian Skafte Mortensen
+
